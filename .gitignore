@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+data/
+reports/assets/
+.pytest_cache/
+blockchain/node_modules/
+blockchain/cache/
+blockchain/artifacts/
+blockchain/hardhat-node.log
+reports/junit.xml
+.claude/
+.env
+*.tmp
+audit.jsonl.lock

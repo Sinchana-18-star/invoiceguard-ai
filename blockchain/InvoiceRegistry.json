@@ -1,0 +1,245 @@
+{
+  "contractName": "InvoiceRegistry",
+  "compiler": "0.8.28+commit.7893614a.Emscripten.clang",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "invoiceKey",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "registrar",
+          "type": "address"
+        }
+      ],
+      "name": "AlreadyRegistered",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "invoiceKey",
+          "type": "bytes32"
+        }
+      ],
+      "name": "NotRegistered",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "invoiceKey",
+          "type": "bytes32"
+        }
+      ],
+      "name": "NotRegistrar",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "invoiceKey",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "decisionHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "DecisionRecorded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "invoiceKey",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "registrar",
+          "type": "address"
+        }
+      ],
+      "name": "InvoiceRegistered",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "APPROVED",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REGISTERED",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "REJECTED",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "invoiceKey",
+          "type": "bytes32"
+        }
+      ],
+      "name": "lookup",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "registrar",
+          "type": "address"
+        },
+        {
+          "internalType": "uint64",
+          "name": "registeredAt",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint8",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "decisionHash",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "invoiceKey",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bool",
+          "name": "approved",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "decisionHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "recordDecision",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "records",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "registrar",
+          "type": "address"
+        },
+        {
+          "internalType": "uint64",
+          "name": "registeredAt",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint8",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "decisionHash",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "invoiceKey",
+          "type": "bytes32"
+        }
+      ],
+      "name": "registerInvoice",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalRegistered",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b5061048b8061001f6000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c8063b140c5fc1161005b578063b140c5fc14610163578063bed7eb7e1461016b578063cb7390b71461017e578063f39ec1f71461018657600080fd5b806301e647251461008d5780630b0ab7761461011d5780634f0cda3014610137578063927416c01461014c575b600080fd5b6100dd61009b3660046103d8565b600060208190529081526040902080546001909101546001600160a01b03821691600160a01b810467ffffffffffffffff1691600160e01b90910460ff169084565b604080516001600160a01b03909516855267ffffffffffffffff909316602085015260ff9091169183019190915260608201526080015b60405180910390f35b610125600181565b60405160ff9091168152602001610114565b61014a6101453660046103f1565b6101d5565b005b61015560015481565b604051908152602001610114565b610125600281565b61014a6101793660046103d8565b6102b9565b610125600381565b6100dd6101943660046103d8565b600090815260208190526040902080546001909101546001600160a01b03821692600160a01b830467ffffffffffffffff1692600160e01b900460ff169190565b600083815260208190526040902080546001600160a01b031661021357604051634660068b60e11b8152600481018590526024015b60405180910390fd5b80546001600160a01b03163314610240576040516306f00be760e01b81526004810185905260240161020a565b8261024c57600361024f565b60025b815460ff60e01b1916600160e01b60ff92831681029190911780845560018401859055604080519290910490921681526020810184905285917fb1319a26b4f035e536e908d22a498f29e3882eaeea4164ac85a149950f9c63db910160405180910390a250505050565b600081815260208190526040902080546001600160a01b03161561030457805460405162fcad5d60e11b8152600481018490526001600160a01b03909116602482015260440161020a565b6040805160808101825233815267ffffffffffffffff428116602080840191825260018486018181526000606087018181528a825293819052968720955186549451915160ff16600160e01b0260ff60e01b1992909616600160a01b026001600160e01b03199095166001600160a01b03919091161793909317929092169290921783559051918101919091558054909182916103a290839061042e565b9091555050604051339083907f27cddf980216b5754340c86b401fbab609a4d39b1fd187808677712fe051964a90600090a35050565b6000602082840312156103ea57600080fd5b5035919050565b60008060006060848603121561040657600080fd5b833592506020840135801515811461041d57600080fd5b929592945050506040919091013590565b8082018082111561044f57634e487b7160e01b600052601160045260246000fd5b9291505056fea264697066735822122065041762ae61e428e603ad564115b145dbc6d9d599116aa5384689caf0f53a0664736f6c634300081c0033"
+}

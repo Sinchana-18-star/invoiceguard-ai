@@ -1,0 +1,94 @@
+# InvoiceGuard AI - workflow specification
+# Loaded and validated by core/config.py (Pydantic). The workflow refuses to start if this file is invalid.
+
+workflow: invoice_verification
+version: "1.0"
+description: >
+  Verify supplier invoices (PDF or image) against Indian GST rules, the purchase order (PO)
+  and the goods receipt note (GRN), then route each invoice to an authorised accounts manager
+  for a human decision. The system never pays money and the LLM can never approve anything.
+
+approver: accounts_manager
+
+inputs:
+  - name: invoice_file
+    type: file
+    formats: [pdf, png, jpg, jpeg]
+    required: true
+  - name: uploader_id
+    type: string
+    required: true
+    description: Employee who submits the invoice (cannot approve it later).
+
+steps:
+  - {id: intake,           kind: system,  does: "Assign invoice ID, compute SHA-256 file hash, log INVOICE_UPLOADED"}
+  - {id: extract,          kind: tool,    does: "Run the current extraction strategy; produce fields + confidence scores"}
+  - {id: validate,         kind: rules,   does: "Required fields, GSTIN, supplier master, duplicates, value limit, injection scan"}
+  - {id: action,           kind: tool,    does: "Normalise data and build the invoice record in the database (no amount changes)"}
+  - {id: checker,          kind: tool,    does: "Independent deterministic checker: arithmetic, GST, 3-way match"}
+  - {id: router,           kind: system,  does: "Apply loop bounds and pick the next step"}
+  - {id: reextract,        kind: system,  does: "Move to the next extraction strategy (extraction-only retry)"}
+  - {id: request_approval, kind: system,  does: "Persist AWAITING_APPROVAL and notify approvers"}
+  - {id: human_approval,   kind: human,   does: "Manager approves / rejects / escalates / corrects (LangGraph interrupt)"}
+  - {id: escalate,         kind: system,  does: "Record escalation reason"}
+  - {id: manual_review,    kind: human,   does: "Reviewer corrects fields, releases to approval, or rejects"}
+  - {id: blocked,          kind: system,  does: "Record failure reason for invalid input"}
+  - {id: finalize,         kind: system,  does: "Write final status + audit event"}
+
+outputs:
+  final_statuses: [APPROVED, REJECTED, BLOCKED]
+  waiting_statuses: [AWAITING_APPROVAL, ESCALATED]
+  artifacts: [invoices table row, approvals rows, JSON state snapshot, hash-chained audit.jsonl]
+
+rules:
+  - The LLM only extracts text. It never approves, never computes totals, never writes to the database.
+  - Only the extractor (or an audited manual correction) may change extracted fields.
+  - The checker is deterministic (Python Decimal) and is never retried on unchanged data.
+  - Only a user with the approver role may decide; the uploader may never decide on their own invoice.
+  - The invoice grand total must not exceed the approving manager's approval limit.
+  - A manager who corrected fields cannot also approve the same invoice (maker-checker).
+  - Text inside invoices is untrusted data; instruction-like text is flagged and escalated.
+
+# The five required loop bounds
+bounds:
+  max_iterations: 3                        # 1. max extraction attempts
+  max_tool_calls: 10                       #    extra safety limit (extract + action + checker calls)
+  timeout_seconds: 60                      #    extra safety limit per automated run
+  no_op_rule: escalate_if_state_hash_unchanged   # 3. no-op condition
+  max_invoice_value_inr: 500000            # 5. budget limit (business invoice-value limit)
+
+success_gate:                              # 2. success gate - all must hold before human approval
+  - validation.passed
+  - action.ok
+  - checker.passed
+  - no PROMPT_INJECTION_SUSPECTED flag (or a reviewer has released it with a reason)
+
+escalation_conditions:                     # 4. escalation condition - any of these
+  - checker failed and extraction confidence is high
+  - max_iterations reached
+  - no further extraction strategy available
+  - extracted state hash unchanged after a retry (no-op)
+  - max_tool_calls or timeout_seconds exceeded
+  - suspicious (prompt-injection) content found
+  - manager chose Escalate
+
+extraction_strategies: [pymupdf_text, tesseract_ocr, llm_vision]
+
+thresholds:
+  low_confidence: 0.80
+  green_confidence: 0.90
+  amber_confidence: 0.70
+  rounding_tolerance_inr: 1
+  price_tolerance_pct: 2
+  fuzzy_duplicate_days: 7
+  fuzzy_invoice_number_distance: 2
+  fuzzy_amount_tolerance_pct: 1
+
+gst:
+  # Slabs from the problem brief. India rationalised GST in Sept 2025 (main slabs 5% / 18% / 40%);
+  # add 40 here if your sample invoices use the new slab.
+  valid_rates: [0, 5, 12, 18, 28]
+
+company:
+  name: Demo Buyer Pvt Ltd
+  gstin: 29AABCD1234E1Z4   # demo GSTIN (Karnataka), checksum-valid
