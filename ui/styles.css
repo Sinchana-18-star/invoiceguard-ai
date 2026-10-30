@@ -1,0 +1,103 @@
+/* InvoiceGuard AI - design system. Only our own .ig-* classes are styled, plus a few stable test-ids. */
+:root {
+  --ig-navy: #142B4A;
+  --ig-navy-2: #24476B;
+  --ig-accent: #3978C5;
+  --ig-bg: #F4F7FB;
+  --ig-surface: #FFFFFF;
+  --ig-text: #182638;
+  --ig-muted: #718096;
+  --ig-border: #E2E8F0;
+  --ig-success: #23865B;
+  --ig-warning: #D99A32;
+  --ig-danger: #CC5151;
+  --ig-success-bg: #E8F5EE;
+  --ig-warning-bg: #FBF3E4;
+  --ig-danger-bg: #FAECEC;
+  --ig-info-bg: #EAF1FA;
+  --ig-radius: 6px;
+  --ig-s1: 4px; --ig-s2: 8px; --ig-s3: 12px; --ig-s4: 16px; --ig-s5: 24px;
+}
+
+/* tabular numerals everywhere money or counts are shown */
+.ig-num, .ig-kpi-value, .ig-money { font-variant-numeric: tabular-nums; }
+
+/* ---------------------------------------------------------------- header */
+.ig-breadcrumb { color: var(--ig-muted); font-size: 12px; letter-spacing: .02em; margin-bottom: 2px; }
+.ig-breadcrumb b { color: var(--ig-text); font-weight: 600; }
+.ig-title { font-size: 22px; font-weight: 700; color: var(--ig-text); margin: 0; line-height: 1.25; }
+.ig-subtitle { color: var(--ig-muted); font-size: 13px; margin-top: 2px; }
+.ig-user-chip { display: inline-flex; gap: 8px; align-items: center; background: var(--ig-surface);
+  border: 1px solid var(--ig-border); border-radius: 999px; padding: 4px 12px 4px 4px; font-size: 12px; }
+.ig-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--ig-navy); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 11px; }
+.ig-role { color: var(--ig-muted); }
+
+/* ---------------------------------------------------------------- cards / sections */
+.ig-section-title { font-size: 13px; font-weight: 600; color: var(--ig-text); text-transform: uppercase;
+  letter-spacing: .06em; margin: var(--ig-s4) 0 var(--ig-s2); }
+.ig-kpi { background: var(--ig-surface); border: 1px solid var(--ig-border); border-radius: var(--ig-radius);
+  padding: var(--ig-s4); transition: box-shadow .15s ease, border-color .15s ease; height: 100%; }
+.ig-kpi:hover { border-color: #C9D6E8; box-shadow: 0 2px 8px rgba(20, 43, 74, .06); }
+.ig-kpi-head { display: flex; justify-content: space-between; align-items: center; color: var(--ig-muted);
+  font-size: 12px; font-weight: 500; }
+.ig-kpi-icon { width: 28px; height: 28px; min-width: 28px; flex-shrink: 0; border-radius: 6px; display: inline-flex;
+  align-items: center; justify-content: center; background: var(--ig-info-bg); }
+.ig-kpi-head span:first-child { padding-right: 6px; }
+.ig-kpi-value { font-size: 26px; font-weight: 700; color: var(--ig-text); margin-top: var(--ig-s2); line-height: 1.1; }
+.ig-kpi-foot { font-size: 11px; color: var(--ig-muted); margin-top: 4px; }
+
+/* ---------------------------------------------------------------- badges */
+.ig-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
+  letter-spacing: .02em; border: 1px solid transparent; white-space: nowrap; }
+.ig-b-success { background: var(--ig-success-bg); color: var(--ig-success); border-color: #C7E6D5; }
+.ig-b-warning { background: var(--ig-warning-bg); color: #9A6A1C; border-color: #F0DDB8; }
+.ig-b-danger  { background: var(--ig-danger-bg);  color: var(--ig-danger);  border-color: #F0CACA; }
+.ig-b-info    { background: var(--ig-info-bg);    color: var(--ig-accent);  border-color: #CFE0F4; }
+.ig-b-neutral { background: #EEF2F7; color: #4A5568; border-color: var(--ig-border); }
+
+/* ---------------------------------------------------------------- field grid (review) */
+.ig-fields { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ig-fields td { padding: 7px 8px; border-bottom: 1px solid var(--ig-border); vertical-align: middle; }
+.ig-fields td.ig-label { color: var(--ig-muted); width: 38%; }
+.ig-fields td.ig-value { color: var(--ig-text); font-weight: 500; word-break: break-word; }
+.ig-fields td.ig-conf { width: 70px; text-align: right; }
+.ig-fields tr.ig-uncertain td { background: #FFFBF2; }
+.ig-missing { color: var(--ig-muted); font-style: italic; font-weight: 400; }
+.ig-conf-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+
+/* ---------------------------------------------------------------- notices */
+.ig-notice { border-radius: var(--ig-radius); padding: 10px 12px; font-size: 13px; margin: 6px 0;
+  border: 1px solid var(--ig-border); background: var(--ig-surface); }
+.ig-notice-title { font-weight: 600; margin-bottom: 2px; }
+.ig-n-danger { border-left: 3px solid var(--ig-danger); background: var(--ig-danger-bg); }
+.ig-n-warning { border-left: 3px solid var(--ig-warning); background: var(--ig-warning-bg); }
+.ig-n-success { border-left: 3px solid var(--ig-success); background: var(--ig-success-bg); }
+.ig-n-info { border-left: 3px solid var(--ig-accent); background: var(--ig-info-bg); }
+.ig-list { margin: 4px 0 0 0; padding-left: 18px; }
+.ig-list li { margin: 2px 0; }
+
+/* ---------------------------------------------------------------- pipeline */
+.ig-pipeline { width: 100%; overflow-x: auto; }
+.ig-pipeline svg { display: block; min-width: 720px; width: 100%; height: auto; }
+
+/* ---------------------------------------------------------------- audit timeline */
+.ig-timeline { position: relative; margin: 4px 0 0 6px; padding-left: 18px; border-left: 2px solid var(--ig-border); }
+.ig-tl-item { position: relative; padding: 0 0 12px 0; font-size: 13px; }
+.ig-tl-item::before { content: ""; position: absolute; left: -24px; top: 4px; width: 10px; height: 10px;
+  border-radius: 50%; background: var(--ig-surface); border: 2px solid var(--ig-accent); }
+.ig-tl-item.ig-tl-ok::before { border-color: var(--ig-success); }
+.ig-tl-item.ig-tl-bad::before { border-color: var(--ig-danger); background: var(--ig-danger); }
+.ig-tl-head { font-weight: 600; color: var(--ig-text); }
+.ig-tl-meta { color: var(--ig-muted); font-size: 11px; }
+.ig-hash { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; color: #4A5568; }
+
+/* ---------------------------------------------------------------- sidebar profile */
+.ig-brand { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: 700; font-size: 15px; }
+.ig-profile { border-top: 1px solid rgba(255,255,255,.12); padding-top: 12px; margin-top: 8px; font-size: 12px;
+  color: #C8D4E3; }
+.ig-profile b { color: #fff; font-size: 13px; }
+
+/* ---------------------------------------------------------------- tidy native chrome */
+[data-testid="stMainBlockContainer"] { padding-top: 1.6rem; max-width: 1360px; }
+footer { visibility: hidden; }

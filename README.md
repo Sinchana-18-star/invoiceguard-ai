@@ -18,7 +18,7 @@ automatically, and the LLM can never approve an invoice or change a verified amo
 | **Explainable fraud score** | 0-100 score from fixed rules (near-duplicate, price inflation, invoice splitting, just-below-limit, urgent terms, double financing…), each with a plain-English reason. HIGH risk is escalated. |
 | **Blockchain double-financing check** | A Solidity `InvoiceRegistry` stores only SHA-256 fingerprints. If another organisation already registered the same invoice, it is escalated. Human decisions are anchored on chain together with the audit-log head hash. |
 | **Human-only approvals** | Separation of duties, per-manager approval limits, maker-checker, and the REST API deliberately has no approval endpoint. |
-| **Tamper-evident audit** | Hash-chained `audit.jsonl`; the Audit page pinpoints the first edited entry. |
+| **Tamper-evident audit** | Hash-chained `audit.jsonl`; the Audit & Compliance page pinpoints the first edited entry. |
 
 ## Quick start
 
@@ -71,7 +71,7 @@ manual_review:  correct → validate · release (with reason) → request_approv
 ```
 
 ⏸ = LangGraph `interrupt()`. State is checkpointed in SQLite (`SqliteSaver`, thread id = invoice id), so a
-paused approval survives an app crash or restart. The **Workflow Spec & Graph** page draws this graph live
+paused approval survives an app crash or restart. The **Workflow Pipeline** page shows each invoice's stage from real workflow state and draws this graph live
 from the compiled LangGraph.
 
 ### The five loop bounds (`workflow_spec.yaml`)
@@ -102,6 +102,14 @@ Extra safety limits: `max_tool_calls: 10` and `timeout_seconds: 60` per automate
   skipped; it never blocks the business workflow.
 - **Money** uses Python `Decimal` everywhere, stored as exact strings in SQLite.
 
+## User interface
+
+Enterprise theme (`.streamlit/config.toml`, `ui/styles.css`) with role-based navigation: employees never see
+Manager Approvals; auditors get read-only governance pages. The UI only calls existing backend functions:
+approvals, corrections and audit verification all go through the workflow / `verify_chain()`, and every
+invoice-derived string is HTML- or Markdown-escaped before display. See `ui/workflow_mapping.md` for how
+pipeline stages map to LangGraph state.
+
 ## Integrations (n8n)
 
 - **Intake**: `POST /api/invoices` (multipart `file` + `uploader_id`, header `X-API-Key`). Also
@@ -121,10 +129,10 @@ table-based layout).
 
 ## Demo script (6 minutes)
 
-1. **Workflow Spec & Graph** page: the five bounds and the live graph.
+1. **Workflow Pipeline** page: the five bounds, the live graph, and an invoice's stages (click a stage for evidence).
 2. **Asha** uploads `01_valid_intra_state.pdf` → AWAITING_APPROVAL, risk LOW, fingerprint on chain.
    Show confidence colours and checker evidence in Invoice Review.
-3. **Double financing + a different layout**: on the Audit page, click "Register as the other organisation"
+3. **Double financing + a different layout**: on the Audit & Compliance page (as a manager), click "Register as the other organisation"
    (pre-filled with `DSW/26-27/0108`). Then upload `10_table_layout_valid.pdf`: it is read correctly despite
    the different layout (ruled table, "Bill No", "Dated: 21-Oct-2026"), passes every check, and is still
    escalated because another organisation already registered it on the blockchain.
@@ -132,13 +140,15 @@ table-based layout).
 5. Upload `03_arithmetic_mismatch.pdf` → ESCALATED with no pointless retries. As **Priya**, correct the total
    → re-checked → AWAITING_APPROVAL. Priya cannot approve her own correction; **Arjun** approves.
 6. `02_valid_inter_state_large.pdf` (₹2.33L): Arjun's ₹1L limit blocks him; Priya approves → decision anchored on chain.
-7. Kill and restart the app → pending approvals are still there. Audit page → **Verify hash chain**, then edit a
+7. Kill and restart the app → pending approvals are still there. Audit & Compliance → **Verify chain now**, then edit a
    line of `data/audit.jsonl` and verify again to show tamper detection.
 
 ## Project layout
 
 ```
-app/            Streamlit UI (dashboard, spec & graph, employee, manager, invoice review, audit, master data)
+app/            Streamlit pages (dashboard, workflow pipeline, employee workspace, invoice review, manager approvals,
+                audit & compliance, system monitoring, settings)
+ui/             design system (styles.css), reusable components, role-based navigation, workflow_mapping.md
 api/            FastAPI REST API for n8n / ERP intake (no approval endpoint by design)
 blockchain/     InvoiceRegistry.sol, compiled ABI/bytecode, Hardhat config (local chain)
 core/           spec config, db models, audit log, ledger client, webhooks, authz, service layer, demo data

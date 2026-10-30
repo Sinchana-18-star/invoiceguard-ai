@@ -1,6 +1,6 @@
 # InvoiceGuard AI - pre-deployment test summary
 
-Generated 2026-10-30 15:41. **65 passed, 0 failed, 0 skipped** of 65 tests. Deployment is ALLOWED.
+Generated 2026-10-30 17:24. **65 passed, 0 failed, 0 skipped** of 65 tests. Deployment is ALLOWED.
 
 | Scenario | Bound / control | Result |
 |---|---|---|

@@ -8,32 +8,24 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-for p in (ROOT, ROOT / "app"):
-    if str(p) not in sys.path:
-        sys.path.insert(0, str(p))
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 import streamlit as st  # noqa: E402
 
-st.set_page_config(page_title="InvoiceGuard AI", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="InvoiceGuard AI", page_icon=str(ROOT / "ui" / "assets" / "icon.svg"),
+                   layout="wide", initial_sidebar_state="expanded")
 
-from components.common import get_ctx, render_user_picker  # noqa: E402
+from ui.access import navigation_for  # noqa: E402
+from ui.components.shell import sidebar_profile  # noqa: E402
+from ui.runtime import current_user, get_ctx, load_css  # noqa: E402
 
-get_ctx()
-st.sidebar.title("🛡️ InvoiceGuard AI")
-st.sidebar.caption("Agentic invoice verification - human approval required")
-render_user_picker()
+load_css()
+st.logo(str(ROOT / "ui" / "assets" / "logo.svg"), size="large", icon_image=str(ROOT / "ui" / "assets" / "icon.svg"))
+with st.spinner("Starting InvoiceGuard AI..."):
+    get_ctx()
 
-pages = st.navigation({
-    "Overview": [st.Page("pages/dashboard.py", title="Dashboard", icon="📊", default=True),
-                 st.Page("pages/spec.py", title="Workflow Spec & Graph", icon="🧭")],
-    "Work": [
-        st.Page("pages/employee.py", title="Employee - Upload", icon="📤"),
-        st.Page("pages/manager.py", title="Manager - Approvals", icon="✅"),
-        st.Page("pages/invoice_review.py", title="Invoice Review", icon="🔍"),
-    ],
-    "Control": [
-        st.Page("pages/audit.py", title="Audit Log", icon="🔗"),
-        st.Page("pages/master_data.py", title="Suppliers, POs & GRNs", icon="🗂️"),
-    ],
-})
-pages.run()
+user = current_user()
+nav = st.navigation(navigation_for(user))  # role-based: employees never get Manager Approvals
+sidebar_profile()
+nav.run()
